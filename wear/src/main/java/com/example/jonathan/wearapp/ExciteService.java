@@ -8,6 +8,7 @@ import android.hardware.SensorManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.os.IBinder;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -27,7 +28,7 @@ public class ExciteService extends Service implements SensorEventListener {
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, mAccel, SensorManager.SENSOR_DELAY_NORMAL);
-        Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -41,21 +42,26 @@ public class ExciteService extends Service implements SensorEventListener {
     @Override
     public final void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Do something here if sensor accuracy changes.
-        Toast.makeText(this, "Accuracy Changed", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Accuracy Changed", Toast.LENGTH_SHORT).show();
     }
+
+    private float lastValue = 0;
 
     @Override
     public final void onSensorChanged(SensorEvent event) {
-        float value = event.values[0];
-        String s = String.valueOf(value);
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+        float curValue = event.values[0];
+        float diff = Math.abs(curValue - lastValue);
+        lastValue = curValue;
+        if (diff > 30) {
+            Toast.makeText(this, "You're excited!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mSensorManager.unregisterListener(this);
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
     }
 
     protected void onResume() {
