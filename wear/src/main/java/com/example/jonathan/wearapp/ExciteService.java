@@ -1,14 +1,21 @@
 package com.example.jonathan.wearapp;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.os.IBinder;
 import android.widget.Toast;
 
 /**
  * Created by jonathan on 7/8/15.
  */
-public class ExciteService extends Service {
+public class ExciteService extends Service implements SensorEventListener {
+    private SensorManager mSensorManager;
+    private Sensor mAccel;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -17,6 +24,9 @@ public class ExciteService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensorManager.registerListener(this, mAccel, SensorManager.SENSOR_DELAY_NORMAL);
         Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
         new Thread(new Runnable() {
             @Override
@@ -29,8 +39,31 @@ public class ExciteService extends Service {
     }
 
     @Override
+    public final void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Do something here if sensor accuracy changes.
+        Toast.makeText(this, "Accuracy Changed", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public final void onSensorChanged(SensorEvent event) {
+        float value = event.values[0];
+        String s = String.valueOf(value);
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
+        mSensorManager.unregisterListener(this);
         Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
     }
+
+    protected void onResume() {
+        mSensorManager.registerListener(this, mAccel, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    protected void onPause() {
+        mSensorManager.unregisterListener(this);
+    }
+
 }
