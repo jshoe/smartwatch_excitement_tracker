@@ -54,14 +54,14 @@ public class ExciteService extends Service implements SensorEventListener {
             @Override
             public void run() {
                 //while(true) {
-                    Log.i("Custom", "Going to wait for getting capabilities");
+                    Log.i("Wear", "Going to wait for getting capabilities");
                     CapabilityApi.GetCapabilityResult result = Wearable.CapabilityApi.getCapability(
                             mGoogleApiClient, "take_pictures", CapabilityApi.FILTER_REACHABLE
                     ).await();
                     Set<Node> connected = result.getCapability().getNodes();
                     for (Node node : connected) {
                         bestNode = node.getId();
-                        Log.i("Custom", "Running at bestNode part");
+                        Log.i("Wear", "Running at bestNode part");
                         break;
                     }
                 //}
@@ -78,7 +78,7 @@ public class ExciteService extends Service implements SensorEventListener {
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
-                        Log.i("Custom", "Connection between phone and watch successful.");
+                        Log.i("Wear", "Connection between phone and watch successful.");
                     }
                     @Override
                     public void onConnectionSuspended( int i) {
@@ -110,12 +110,11 @@ public class ExciteService extends Service implements SensorEventListener {
         lastValue = curValue;
         if (diff > 30) {
             showNotif();
-            SendMesgToPhone();
         }
     }
 
     public void SendMesgToPhone() {
-        Log.i("Custom", "Running MessageApi.sendMessage");
+        Log.i("Wear", "Running MessageApi.sendMessage");
         Wearable.MessageApi.sendMessage(
                 mGoogleApiClient, bestNode, "start_workflow", new byte[3]
         );
@@ -125,14 +124,16 @@ public class ExciteService extends Service implements SensorEventListener {
         int notificationId = 001;
 
         // Build intent for notification content
-        Intent viewIntent = new Intent(this, MainActivity.class);
+        Intent userResponse = new Intent(this, SendToPhone.class);
+        userResponse.putExtra("methodName", "SendMesgToPhone");
+
         // viewIntent.putExtra(EXTRA_EVENT_ID, eventId);
-        PendingIntent viewPendingIntent = PendingIntent.getActivity(this, 0, viewIntent, 0);
+        PendingIntent viewPendingIntent = PendingIntent.getActivity(this, 0, userResponse, 0);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.open_on_phone)
-                .setContentTitle("You're excited!")
-                .setContentText("Let's document it")
+                .setContentTitle("Excitement!")
+                .setContentText("Open to document it")
                 .setContentIntent(viewPendingIntent);
 
         // Get an instance of the NotificationManager service
