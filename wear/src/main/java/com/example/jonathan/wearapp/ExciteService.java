@@ -9,6 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -16,6 +17,15 @@ import android.support.v4.app.NotificationCompat.WearableExtender;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.CapabilityApi;
+import com.google.android.gms.wearable.CapabilityApi.GetCapabilityResult;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
+
+import java.util.Set;
 
 /**
  * Created by jonathan on 7/8/15.
@@ -28,6 +38,9 @@ public class ExciteService extends Service implements SensorEventListener {
     public IBinder onBind(Intent arg0) {
         return null;
     }
+
+    private GetCapabilityResult nodes;
+    private String bestNode = "1";
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -42,7 +55,43 @@ public class ExciteService extends Service implements SensorEventListener {
                 }
             }
         }).start();
+        initiateApiClient();
+
+        CapabilityApi.GetCapabilityResult result = Wearable.CapabilityApi.getCapability(
+                mGoogleApiClient, "take_pictures", CapabilityApi.FILTER_REACHABLE
+        ).await();
+        Set<Node> connected = result.getCapability().getNodes();
+        for (Node node : connected) {
+            if (node.isNearby()) {
+                bestNode = node.getId();
+            }
+        }
         return START_STICKY;
+    }
+
+    private GoogleApiClient mGoogleApiClient;
+
+    public void initiateApiClient() {
+        this.mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+                        // Do something
+                    }
+                    @Override
+                    public void onConnectionSuspended( int i) {
+                        // Do something
+                    }
+                })
+                .addOnConnectionFailedListener( new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult connectionResult) {
+                        // Do something
+                    }
+                })
+                .addApi(Wearable.API)
+                .build();
+        this.mGoogleApiClient.connect();
     }
 
     @Override
@@ -58,59 +107,42 @@ public class ExciteService extends Service implements SensorEventListener {
         float diff = Math.abs(curValue - lastValue);
         lastValue = curValue;
         if (diff > 30) {
-            Toast.makeText(this, "You're excited!", Toast.LENGTH_SHORT).show();
-            test();
+            showNotif();
+            SendMesgToPhone();
         }
     }
 
-    public void test() {
-        int notificationId = 001;
-
-        // Create a pending intent that starts this wearable app
-        Intent startIntent = new Intent(this, MainActivity.class).setAction(Intent.ACTION_MAIN);
-        // Add extra data for app startup or initialization, if available
-        PendingIntent startPendingIntent =
-                PendingIntent.getActivity(this, 0, startIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        Notification notify = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("hi")
-                .setContentText("lol")
-                .setContentIntent(startPendingIntent)
-                .build();
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(notificationId, notify);
+    public void SendMesgToPhone() {
+        Wearable.MessageApi.sendMessage(
+                mGoogleApiClient, bestNode, "start_workflow", new byte[3]
+        );
     }
 
-    public void btnShowNotificationClick(){
+    public void showNotif() {
         int notificationId = 001;
-        Context context = getApplicationContext();
 
         // Build intent for notification content
         Intent viewIntent = new Intent(this, MainActivity.class);
+        // viewIntent.putExtra(EXTRA_EVENT_ID, eventId);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(this, 0, viewIntent, 0);
 
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(context)
-                        .setContentTitle("hi")
-                        .setContentText("man")
-                        .setContentIntent(viewPendingIntent);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.open_on_phone)
+                .setContentTitle("You're excited!")
+                .setContentText("Let's document it")
+                .setContentIntent(viewPendingIntent);
 
         // Get an instance of the NotificationManager service
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(this);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
         // Build the notification and issues it with notification manager.
         notificationManager.notify(notificationId, notificationBuilder.build());
-        Toast.makeText(this, "Well this part is working!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mSensorManager.unregisterListener(this);
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
     }
 
     protected void onResume() {

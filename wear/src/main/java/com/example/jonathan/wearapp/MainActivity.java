@@ -23,6 +23,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
+        startService(new Intent(getBaseContext(), ExciteService.class));
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
@@ -38,29 +39,6 @@ public class MainActivity extends Activity {
     }
 
     public void startService(View view) {
-        startService(new Intent(getBaseContext(), ExciteService.class));
-        btnShowNotificationClick();
-    }
-
-    public void btnShowNotificationClick(){
-        int notificationId = 001;
-
-        // Build intent for notification content
-        Intent viewIntent = new Intent(this, MainActivity.class);
-        PendingIntent viewPendingIntent = PendingIntent.getActivity(this, 0, viewIntent, 0);
-
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(MainActivity.this)
-                        .setContentTitle("hi")
-                        .setContentText("man");
-
-        // Get an instance of the NotificationManager service
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(this);
-
-        // Build the notification and issues it with notification manager.
-        notificationManager.notify(notificationId, notificationBuilder.build());
-        Toast.makeText(this, "Well this part is working!", Toast.LENGTH_SHORT).show();
     }
 
     public void stopService(View view) {
