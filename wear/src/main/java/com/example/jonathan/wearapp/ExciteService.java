@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.NotificationCompat.WearableExtender;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,24 +49,25 @@ public class ExciteService extends Service implements SensorEventListener {
         mAccel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(this, mAccel, SensorManager.SENSOR_DELAY_NORMAL);
         Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
+        initiateApiClient();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
-                }
+                //while(true) {
+                    Log.i("Custom", "Going to wait for getting capabilities");
+                    CapabilityApi.GetCapabilityResult result = Wearable.CapabilityApi.getCapability(
+                            mGoogleApiClient, "take_pictures", CapabilityApi.FILTER_REACHABLE
+                    ).await();
+                    Set<Node> connected = result.getCapability().getNodes();
+                    for (Node node : connected) {
+                        bestNode = node.getId();
+                        Log.i("Custom", "Running at bestNode part");
+                        break;
+                    }
+                //}
             }
         }).start();
-        initiateApiClient();
 
-        CapabilityApi.GetCapabilityResult result = Wearable.CapabilityApi.getCapability(
-                mGoogleApiClient, "take_pictures", CapabilityApi.FILTER_REACHABLE
-        ).await();
-        Set<Node> connected = result.getCapability().getNodes();
-        for (Node node : connected) {
-            if (node.isNearby()) {
-                bestNode = node.getId();
-            }
-        }
         return START_STICKY;
     }
 
@@ -76,7 +78,7 @@ public class ExciteService extends Service implements SensorEventListener {
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle bundle) {
-                        // Do something
+                        Log.i("Custom", "Connection between phone and watch successful.");
                     }
                     @Override
                     public void onConnectionSuspended( int i) {
@@ -113,6 +115,7 @@ public class ExciteService extends Service implements SensorEventListener {
     }
 
     public void SendMesgToPhone() {
+        Log.i("Custom", "Running MessageApi.sendMessage");
         Wearable.MessageApi.sendMessage(
                 mGoogleApiClient, bestNode, "start_workflow", new byte[3]
         );
