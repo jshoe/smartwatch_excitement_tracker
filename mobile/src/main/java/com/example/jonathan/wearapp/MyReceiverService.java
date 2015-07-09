@@ -1,5 +1,6 @@
 package com.example.jonathan.wearapp;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.android.gms.wearable.MessageEvent;
@@ -19,5 +20,9 @@ public class MyReceiverService extends WearableListenerService {
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         Log.i("Phone", "Phone received the message.");
+        Intent i = new Intent();
+        i.setClass(this, PhotoWorkflowActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
     }
 }
