@@ -1,18 +1,33 @@
 package com.example.jonathan.wearapp;
 
+import android.app.Activity;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-public class TwitterActivity extends ActionBarActivity {
+import java.io.File;
+
+
+public class TwitterActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_twitter);
-
+        String imagePath = getIntent().getStringExtra("imagePath");
+        Log.i("TwitterActivity", "Booting up Twitter.");
+        Log.i("TwitterActivity", "Trying to get " + imagePath);
+        File imageFile = new File(imagePath);
+        Uri myImageUri = Uri.fromFile(imageFile);
+        TweetComposer.Builder builder = new TweetComposer.Builder(this)
+                .text("#cs160excited ")
+                .image(myImageUri);
+        builder.show();
     }
 
     @Override

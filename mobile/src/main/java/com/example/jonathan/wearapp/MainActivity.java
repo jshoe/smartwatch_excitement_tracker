@@ -9,13 +9,25 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
+
+import io.fabric.sdk.android.Fabric;
 
 
 public class MainActivity extends Activity {
 
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "gKQ9spnTcIMu5bWCpCpaY94YB";
+    private static final String TWITTER_SECRET = "4ttSRPiAuglejkfkXk8yruG2Fl6XdCUWMylJk6v2FZt5MeUv4l";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig), new TweetComposer());
         setContentView(R.layout.activity_main);
         Intent listener = new Intent(this, MyReceiverService.class);
         startService(listener);

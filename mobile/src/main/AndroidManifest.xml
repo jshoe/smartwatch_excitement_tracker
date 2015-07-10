@@ -39,6 +39,10 @@
             android:name=".TwitterActivity"
             android:label="@string/title_activity_twitter" >
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="b90b81a846f847bb27dc7edc144df0f30e25e55a" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

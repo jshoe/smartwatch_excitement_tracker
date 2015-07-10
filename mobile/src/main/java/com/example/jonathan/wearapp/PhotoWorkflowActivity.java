@@ -64,6 +64,8 @@ public class PhotoWorkflowActivity extends Activity {
         Log.i("Photo workflow activity", "Photo added to gallery.");
     }
 
+    private String absolutePath;
+
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -77,6 +79,7 @@ public class PhotoWorkflowActivity extends Activity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
+        absolutePath = image.getAbsolutePath();
         mCurrentPhotoPath = "file:" + image.getAbsolutePath();
         Log.i("Photo workflow activity", "The file path is: " + mCurrentPhotoPath);
         return image;
@@ -85,6 +88,11 @@ public class PhotoWorkflowActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         galleryAddPic();
+        Intent i = new Intent();
+        i.putExtra("imagePath", absolutePath);
+        i.setClass(this, TwitterActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
     }
 
     @Override
