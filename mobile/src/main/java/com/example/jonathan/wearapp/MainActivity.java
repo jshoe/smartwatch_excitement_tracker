@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import io.fabric.sdk.android.Fabric;
@@ -27,7 +28,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
-        Fabric.with(this, new Twitter(authConfig), new TweetComposer());
+        Fabric.with(this, new Twitter(authConfig), new TwitterCore(authConfig), new TweetComposer());
         setContentView(R.layout.activity_main);
         Intent listener = new Intent(this, MyReceiverService.class);
         startService(listener);
