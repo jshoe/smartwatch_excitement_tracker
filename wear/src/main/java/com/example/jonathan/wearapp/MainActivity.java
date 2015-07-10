@@ -31,8 +31,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent listener = new Intent(this, WearListenerService.class);
-        startService(listener);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         startService(new Intent(getBaseContext(), ExciteService.class));
         Bundle extras = getIntent().getExtras();

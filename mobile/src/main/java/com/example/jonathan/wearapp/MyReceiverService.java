@@ -17,15 +17,10 @@ public class MyReceiverService extends WearableListenerService {
         super.onCreate();
     }
 
-    String wearNodeId;
-
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
-        wearNodeId = messageEvent.getSourceNodeId();
         Log.i("Phone", "Phone received the message.");
-        Log.i("Wear", "nodeID is " + wearNodeId);
         Intent i = new Intent();
-        i.putExtra("wearNodeId", wearNodeId);
         i.setClass(this, PhotoWorkflowActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);

@@ -89,9 +89,7 @@ public class PhotoWorkflowActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         galleryAddPic();
         Intent i = new Intent();
-        String wearNodeId = getIntent().getStringExtra("wearNodeId");
         i.putExtra("imagePath", absolutePath);
-        i.putExtra("wearNodeId", wearNodeId);
         i.setClass(this, TwitterActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
