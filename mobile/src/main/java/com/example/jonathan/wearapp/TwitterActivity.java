@@ -12,6 +12,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.wearable.CapabilityApi;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.AppSession;
 import com.twitter.sdk.android.core.Callback;
@@ -37,6 +40,11 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.NotificationCompat.WearableExtender;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Set;
 
 
 public class TwitterActivity extends Activity {
@@ -54,85 +62,95 @@ public class TwitterActivity extends Activity {
                 .text("#cs160excited ")
                 .image(myImageUri);
         builder.show();
+        fetchMutualTweet();
+    }
 
-        final SearchTimeline searchTimeline = new SearchTimeline.Builder().query("#twitterflock").build();
-        final TweetTimelineListAdapter adapter = new TweetTimelineListAdapter(this, searchTimeline);
-        //setListAdapter(adapter);
-
-        final Bitmap pic = BitmapFactory.decodeResource(this.getResources(), R.drawable.abc_btn_check_material);
-
-        TwitterCore.getInstance().logInGuest(new Callback<AppSession>() {
+    public void fetchMutualTweet() {
+        new Thread() {
             @Override
-            public void success(Result<AppSession> result) {
-                AppSession guestAppSession = result.data;
-                Log.i("TwitterActivity", "Guest session success.");
-                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(guestAppSession);
-                SearchService service = twitterApiClient.getSearchService();
-                service.tweets("#cs160excited", null, null, null, "recent", 1, null, null, null, true, new Callback<Search>() {
+            public void run() {
+                TwitterCore.getInstance().logInGuest(new Callback<AppSession>() {
                     @Override
-                    public void success(Result<Search> result) {
-                        Log.i("TwitterActivityGuest", "It thinks it successfully searched.");
-                        Log.i("TwitterActivityGuest", "Result: " + result.data.toString());
-                        Log.i("TwitterActivityGuest", "Result: " + result.data.tweets.get(0).text);
-                        Log.i("TwitterActivityGuest", "Result: " + result.data.tweets.get(0).entities.media.get(0).mediaUrl);
-                        NotificationCompat.Builder notificationBuilder =
-                                new NotificationCompat.Builder(TwitterActivity.this)
-                                        .setSmallIcon(R.drawable.ic_media_play)
-                                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_cast_light))
-                                        .setContentTitle("Title")
-                                        .setContentText("Android Wear Notification")
-                                        .extend(new NotificationCompat.WearableExtender().setBackground(pic));
+                    public void success(Result<AppSession> result) {
+                        AppSession guestAppSession = result.data;
+                        Log.i("TwitterActivity", "Guest session success.");
+                        TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(guestAppSession);
+                        SearchService service = twitterApiClient.getSearchService();
+                        service.tweets("#cs160excited", null, null, null, "recent", 1, null, null, null, true, new Callback<Search>() {
+                            @Override
+                            public void success(Result<Search> result) {
+                                Log.i("TwitterActivityGuest", "It thinks it successfully searched.");
+                                Log.i("TwitterActivityGuest", "Result: " + result.data.toString());
+                                Log.i("TwitterActivityGuest", "Result: " + result.data.tweets.get(0).text);
+                                String src = result.data.tweets.get(0).entities.media.get(0).mediaUrl;
+                                Log.i("TwitterActivityGuest", "Result: " + src);
 
-                        NotificationManagerCompat notificationManager =
-                                NotificationManagerCompat.from(TwitterActivity.this);
+                                Bitmap bitmap = getBitmapFromURL(src);
 
-                        notificationManager.notify(2, notificationBuilder.build());
+                                /**NotificationCompat.Builder notificationBuilder =
+                                        new NotificationCompat.Builder(TwitterActivity.this)
+                                                .setSmallIcon(R.drawable.ic_media_play)
+                                                .setContentTitle("Title")
+                                                .setContentText("Android Wear Notification")
+                                                .extend(new NotificationCompat.WearableExtender().setBackground(bitmap));
+
+                                NotificationManagerCompat notificationManager =
+                                        NotificationManagerCompat.from(TwitterActivity.this);
+
+                                notificationManager.notify(2, notificationBuilder.build());**/
+                            }
+
+                            public void failure(TwitterException exception) {
+                                Log.i("TwitterActivityGuest", "Problem searching.");
+                                Log.i("TwitterActivityGuest", exception.toString());
+                            }
+                        });
                     }
 
+                    @Override
                     public void failure(TwitterException exception) {
-                        Log.i("TwitterActivityGuest", "Problem searching.");
-                        Log.i("TwitterActivityGuest", exception.toString());
+                        Log.i("TwitterActivityGuest", "Guest session failure.");
                     }
                 });
             }
-
-            @Override
-            public void failure(TwitterException exception) {
-                Log.i("TwitterActivityGuest", "Guest session failure.");
-            }
-        });
-
-        TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
-        SearchService service = twitterApiClient.getSearchService();
-        service.tweets("#cs160excited", null, null, null, "recent", 1, null, null, null, true, new Callback<Search>() {
-            @Override
-            public void success(Result<Search> result) {
-                Log.i("TwitterActivity", "It thinks it successfully searched.");
-                Log.i("TwitterActivity", "Result: " + result.data.toString());
-                Log.i("TwitterActivity", "Result: " + result.data.tweets.get(0).text);
-                Log.i("TwitterActivity", "Result: " + result.data.tweets.get(0).entities.media.get(0).mediaUrl);
-            }
-
-            public void failure(TwitterException exception) {
-                Log.i("TwitterActivity", "Problem searching.");
-                Log.i("TwitterActivity", exception.toString());
-            }
-        });
-
-        /**StatusesService statusesService = Twitter.getApiClient().getStatusesService();
-        statusesService.show(524971209851543553L, null, null, null, new Callback<Tweet>() {
-            @Override
-            public void success(Result<Tweet> result) {
-                Log.i("TwitterActivity", "It thinks it successfully showed a status.");
-                Log.i("TwitterActivity", "Result: " + result.data.text);
-            }
-
-            public void failure(TwitterException exception) {
-                //Do something on failure
-            }
-        });**/
-
+        }.start();
     }
+
+    public static Bitmap getBitmapFromURL(String src) {
+        Log.i("TwitterActivityGuest", "Trying to make the bitmap.");
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        }
+    }
+
+    /**private Bitmap nextPic;
+
+    public static Bitmap getBitmapFromURL(String src) {
+        final String src2 = src;
+        Bitmap nextPic2 = nextPic;
+        new Thread(new Runnable() {
+            @Override
+                URL url = new URL(src2);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                nextPic2 = BitmapFactory.decodeStream(input);
+                } catch (IOException e) {
+                    // Log exception
+                }
+            }
+        }).start();
+    }**/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
