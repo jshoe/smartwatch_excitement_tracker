@@ -13,6 +13,12 @@ import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
+import android.content.Intent;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -23,6 +29,7 @@ public class MainActivity extends Activity {
     private static final String TWITTER_KEY = "hJSkpaUOdA9Nh2sNwWkQm2mbz";
     private static final String TWITTER_SECRET = "NHuksaneMpQdGc281DxkGPZ4Ap097wwygS0xensGkq32vsKL69";
 
+    private TwitterLoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +37,21 @@ public class MainActivity extends Activity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig), new TwitterCore(authConfig), new TweetComposer());
         setContentView(R.layout.activity_main);
+        loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        loginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                // Do something with result, which provides a TwitterSession for making API calls
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                // Do something on failure
+            }
+        });
         Intent listener = new Intent(this, MyReceiverService.class);
         startService(listener);
+
     }
 
     @Override
