@@ -43,8 +43,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 public class TwitterActivity extends Activity {
@@ -85,19 +90,19 @@ public class TwitterActivity extends Activity {
                                 String src = result.data.tweets.get(0).entities.media.get(0).mediaUrl;
                                 Log.i("TwitterActivityGuest", "Result: " + src);
 
-                                Bitmap bitmap = getBitmapFromURL(src);
+                                Bitmap pic = getBitmapFromURL(src);
 
-                                /**NotificationCompat.Builder notificationBuilder =
+                                NotificationCompat.Builder notificationBuilder =
                                         new NotificationCompat.Builder(TwitterActivity.this)
                                                 .setSmallIcon(R.drawable.ic_media_play)
-                                                .setContentTitle("Title")
-                                                .setContentText("Android Wear Notification")
-                                                .extend(new NotificationCompat.WearableExtender().setBackground(bitmap));
+                                                .setContentTitle("Nearby!")
+                                                .setContentText("Someone else was excited!")
+                                                .extend(new NotificationCompat.WearableExtender().setBackground(pic));
 
                                 NotificationManagerCompat notificationManager =
                                         NotificationManagerCompat.from(TwitterActivity.this);
 
-                                notificationManager.notify(2, notificationBuilder.build());**/
+                                notificationManager.notify(2, notificationBuilder.build());
                             }
 
                             public void failure(TwitterException exception) {
@@ -116,41 +121,29 @@ public class TwitterActivity extends Activity {
         }.start();
     }
 
-    public static Bitmap getBitmapFromURL(String src) {
-        Log.i("TwitterActivityGuest", "Trying to make the bitmap.");
+    private Bitmap getBitmapFromURL(String u) {
+        final String url = u;
+        // http://developer.android.com/reference/java/util/concurrent/Executors.html
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Bitmap> result = executor.submit(new Callable<Bitmap>() {
+            @Override
+            public Bitmap call() {
+                try {
+                    return BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        });
         try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            // Log exception
+            return result.get();
+        } catch (Exception e) {
             return null;
         }
     }
-
-    /**private Bitmap nextPic;
-
-    public static Bitmap getBitmapFromURL(String src) {
-        final String src2 = src;
-        Bitmap nextPic2 = nextPic;
-        new Thread(new Runnable() {
-            @Override
-                URL url = new URL(src2);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                nextPic2 = BitmapFactory.decodeStream(input);
-                } catch (IOException e) {
-                    // Log exception
-                }
-            }
-        }).start();
-    }**/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
