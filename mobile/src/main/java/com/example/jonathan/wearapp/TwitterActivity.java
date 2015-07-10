@@ -1,7 +1,11 @@
 package com.example.jonathan.wearapp;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +19,7 @@ import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.internal.TwitterApi;
 import com.twitter.sdk.android.core.models.Search;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.SearchService;
@@ -26,6 +31,10 @@ import com.twitter.sdk.android.tweetui.UserTimeline;
 import com.twitter.sdk.android.tweetui.LoadCallback;
 import com.twitter.sdk.android.tweetui.CompactTweetView;
 import com.twitter.sdk.android.tweetui.TweetViewFetchAdapter;
+import android.support.v4.app.NotificationCompat.WearableExtender;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.NotificationCompat.WearableExtender;
 
 import java.io.File;
 
@@ -50,6 +59,8 @@ public class TwitterActivity extends Activity {
         final TweetTimelineListAdapter adapter = new TweetTimelineListAdapter(this, searchTimeline);
         //setListAdapter(adapter);
 
+        final Bitmap pic = BitmapFactory.decodeResource(this.getResources(), R.drawable.abc_btn_check_material);
+
         TwitterCore.getInstance().logInGuest(new Callback<AppSession>() {
             @Override
             public void success(Result<AppSession> result) {
@@ -64,6 +75,18 @@ public class TwitterActivity extends Activity {
                         Log.i("TwitterActivityGuest", "Result: " + result.data.toString());
                         Log.i("TwitterActivityGuest", "Result: " + result.data.tweets.get(0).text);
                         Log.i("TwitterActivityGuest", "Result: " + result.data.tweets.get(0).entities.media.get(0).mediaUrl);
+                        NotificationCompat.Builder notificationBuilder =
+                                new NotificationCompat.Builder(TwitterActivity.this)
+                                        .setSmallIcon(R.drawable.ic_media_play)
+                                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_cast_light))
+                                        .setContentTitle("Title")
+                                        .setContentText("Android Wear Notification")
+                                        .extend(new NotificationCompat.WearableExtender().setBackground(pic));
+
+                        NotificationManagerCompat notificationManager =
+                                NotificationManagerCompat.from(TwitterActivity.this);
+
+                        notificationManager.notify(2, notificationBuilder.build());
                     }
 
                     public void failure(TwitterException exception) {
