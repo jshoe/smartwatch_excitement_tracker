@@ -25,7 +25,4 @@ dependencies {
     compile 'com.google.android.support:wearable:1.2.0'
     compile 'com.google.android.gms:play-services-wearable:7.5.0'
     compile 'com.android.support:support-v4:20.0.+'
-    compile ('com.github.florent37:davinci:1.0.3@aar'){
-        transitive = true
-    }
 }

@@ -42,7 +42,4 @@ dependencies {
     compile('com.twitter.sdk.android:twitter:1.6.0@aar') {
         transitive = true;
     }
-    compile ('com.github.florent37:davincidaemon:1.0.3@aar'){
-        transitive = true
-    }
 }

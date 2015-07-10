@@ -23,7 +23,6 @@ public class MainActivity extends Activity {
     private static final String TWITTER_KEY = "gKQ9spnTcIMu5bWCpCpaY94YB";
     private static final String TWITTER_SECRET = "4ttSRPiAuglejkfkXk8yruG2Fl6XdCUWMylJk6v2FZt5MeUv4l";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

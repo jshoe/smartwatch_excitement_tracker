@@ -70,7 +70,7 @@ public class TwitterActivity extends Activity {
             }
 
             public void failure(TwitterException exception) {
-                Log.i("TwitterActivity", "Exception: " + exception.toString());
+                Log.i("TwitterActivity", "Exception: " + exception.toString() + exception.getMessage());
                 Log.i("TwitterActivity", "Failed to search for some reason.");
             }
         });
