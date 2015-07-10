@@ -35,6 +35,10 @@
             android:name=".PhotoWorkflowActivity"
             android:label="@string/title_activity_photo_workflow" >
         </activity>
+        <activity
+            android:name=".TwitterActivity"
+            android:label="@string/title_activity_twitter" >
+        </activity>
     </application>
 
 </manifest>
