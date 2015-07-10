@@ -33,24 +33,22 @@ public class SendToPhone extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                //while(true) {
-                Log.i("Activity", "Searching for nodes.");
-                CapabilityApi.GetCapabilityResult result = Wearable.CapabilityApi.getCapability(
-                        mGoogleApiClient, "take_pictures", CapabilityApi.FILTER_REACHABLE
-                ).await();
-                Set<Node> connected = result.getCapability().getNodes();
-                for (Node node : connected) {
-                    bestNode = node.getId();
-                    Log.i("Activity", "Acquired a node.");
-                    sendTheMesg();
-                    break;
-                }
-                //}
+            Log.i("Activity", "Searching for nodes.");
+            CapabilityApi.GetCapabilityResult result = Wearable.CapabilityApi.getCapability(
+                    mGoogleApiClient, "take_pictures", CapabilityApi.FILTER_REACHABLE
+            ).await();
+            Set<Node> connected = result.getCapability().getNodes();
+            for (Node node : connected) {
+                bestNode = node.getId();
+                Log.i("Activity", "Acquired a node.");
+                sendMesgToPhone();
+                break;
+            }
             }
         }).start();
     }
 
-    public void sendTheMesg() {
+    public void sendMesgToPhone() {
         Log.i("Activity", "Going to send a message.");
         Wearable.MessageApi.sendMessage(
                 mGoogleApiClient, bestNode, "start_workflow", new byte[3]

@@ -2,22 +2,18 @@ package com.example.jonathan.wearapp;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 
 public class PhotoWorkflowActivity extends Activity {
 
@@ -30,8 +26,6 @@ public class PhotoWorkflowActivity extends Activity {
     }
 
     static final int REQUEST_TAKE_PHOTO = 1;
-    private ImageView mImageView;
-    private Bitmap mImageBitmap;
     String mCurrentPhotoPath;
 
     private void dispatchTakePictureIntent() {
@@ -55,7 +49,7 @@ public class PhotoWorkflowActivity extends Activity {
         }
     }
 
-    private void galleryAddPic() {
+    private void galleryAddPic() { // Still doesn't seem to work in emulator.
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);

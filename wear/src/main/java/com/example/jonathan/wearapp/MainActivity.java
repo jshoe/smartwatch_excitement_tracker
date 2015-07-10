@@ -1,26 +1,19 @@
 package com.example.jonathan.wearapp;
 
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.NotificationCompat.WearableExtender;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
 import android.widget.TextView;
 import android.view.Menu;
 import android.content.Intent;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.CapabilityApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
-
 
 import java.util.Set;
 public class MainActivity extends Activity {
@@ -65,9 +58,6 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         Log.i("Activity", "onNewIntent called");
         super.onNewIntent(intent);
-        if(intent.getStringExtra("methodName").equals("SendMesgToPhone")){
-
-        }
     }
 
     public void SendMesgToPhone() {

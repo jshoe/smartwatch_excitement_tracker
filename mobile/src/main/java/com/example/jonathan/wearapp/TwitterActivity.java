@@ -6,51 +6,30 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.wearable.CapabilityApi;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.Wearable;
-import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.AppSession;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.internal.TwitterApi;
 import com.twitter.sdk.android.core.models.Search;
-import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.SearchService;
-import com.twitter.sdk.android.core.services.StatusesService;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
-import com.twitter.sdk.android.tweetui.SearchTimeline;
-import com.twitter.sdk.android.tweetui.TweetTimelineListAdapter;
-import com.twitter.sdk.android.tweetui.UserTimeline;
-import com.twitter.sdk.android.tweetui.LoadCallback;
-import com.twitter.sdk.android.tweetui.CompactTweetView;
-import com.twitter.sdk.android.tweetui.TweetViewFetchAdapter;
-import android.support.v4.app.NotificationCompat.WearableExtender;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.NotificationCompat.WearableExtender;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 
 public class TwitterActivity extends Activity {
 
@@ -90,7 +69,7 @@ public class TwitterActivity extends Activity {
                                 String src = result.data.tweets.get(0).entities.media.get(0).mediaUrl;
                                 Log.i("TwitterActivityGuest", "Result: " + src);
 
-                                Bitmap pic = getBitmapFromURL(src);
+                                Bitmap pic = pictureFetch(src);
 
                                 NotificationCompat.Builder notificationBuilder =
                                         new NotificationCompat.Builder(TwitterActivity.this)
@@ -98,10 +77,8 @@ public class TwitterActivity extends Activity {
                                                 .setContentTitle("Nearby!")
                                                 .setContentText("Someone else was excited!")
                                                 .extend(new NotificationCompat.WearableExtender().setBackground(pic));
-
                                 NotificationManagerCompat notificationManager =
                                         NotificationManagerCompat.from(TwitterActivity.this);
-
                                 notificationManager.notify(2, notificationBuilder.build());
                             }
 
@@ -121,15 +98,15 @@ public class TwitterActivity extends Activity {
         }.start();
     }
 
-    private Bitmap getBitmapFromURL(String u) {
-        final String url = u;
+    private Bitmap pictureFetch(final String src) {
         // http://developer.android.com/reference/java/util/concurrent/Executors.html
+        // Fixes the network on main UI thread error.
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Bitmap> result = executor.submit(new Callable<Bitmap>() {
             @Override
             public Bitmap call() {
                 try {
-                    return BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
+                    return BitmapFactory.decodeStream((InputStream) new URL(src).getContent());
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {

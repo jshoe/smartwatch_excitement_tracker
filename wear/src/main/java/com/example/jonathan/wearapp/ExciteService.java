@@ -1,6 +1,5 @@
 package com.example.jonathan.wearapp;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -13,10 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.NotificationCompat.WearableExtender;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,9 +24,6 @@ import com.google.android.gms.wearable.Wearable;
 
 import java.util.Set;
 
-/**
- * Created by jonathan on 7/8/15.
- */
 public class ExciteService extends Service implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor mAccel;
@@ -67,7 +60,6 @@ public class ExciteService extends Service implements SensorEventListener {
                 //}
             }
         }).start();
-
         return START_STICKY;
     }
 
