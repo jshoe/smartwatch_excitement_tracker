@@ -126,6 +126,7 @@ public class ExciteService extends Service implements SensorEventListener {
                 .setSmallIcon(R.drawable.open_on_phone)
                 .setContentTitle("Excitement!")
                 .setContentText("Open to document it")
+                .setAutoCancel(true)
                 .setContentIntent(viewPendingIntent);
 
         // Get an instance of the NotificationManager service

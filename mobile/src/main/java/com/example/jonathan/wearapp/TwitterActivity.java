@@ -1,6 +1,7 @@
 package com.example.jonathan.wearapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -42,10 +43,17 @@ public class TwitterActivity extends Activity {
         Log.i("TwitterActivity", "Trying to get " + imagePath);
         File imageFile = new File(imagePath);
         Uri myImageUri = Uri.fromFile(imageFile);
-        TweetComposer.Builder builder = new TweetComposer.Builder(this)
+
+        Intent intent = new TweetComposer.Builder(this)
                 .text("#cs160excited ")
-                .image(myImageUri);
-        builder.show();
+                .image(myImageUri)
+                .createIntent();
+        startActivityForResult(intent, 100);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i("TwitterActivity", "In onActivityResult.");
         fetchMutualTweet();
     }
 

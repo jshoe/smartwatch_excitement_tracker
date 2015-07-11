@@ -42,6 +42,8 @@ public class SendToPhone extends Activity {
                 bestNode = node.getId();
                 Log.i("Activity", "Acquired a node.");
                 sendMesgToPhone();
+                Log.i("Activity", "Message was sent successfully");
+                finish();
                 break;
             }
             }
@@ -54,6 +56,7 @@ public class SendToPhone extends Activity {
                 mGoogleApiClient, bestNode, "start_workflow", new byte[3]
         );
         Log.i("Activity", "Message sent successfully");
+        finish();
     }
 
     private String bestNode = "1";
