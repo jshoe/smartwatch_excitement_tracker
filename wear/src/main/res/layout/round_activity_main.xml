@@ -5,7 +5,8 @@
 
     <TextView android:id="@+id/text" android:layout_width="wrap_content"
         android:layout_height="wrap_content" android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" android:text="We're now tracking your excitement!"
-        android:textSize="20sp" />
+        android:layout_marginLeft="50dp"
+        android:layout_centerVertical="true" android:text="We're now tracking your excitement! Swipe from left to exit."
+        android:textSize="15sp" />
 
 </RelativeLayout>

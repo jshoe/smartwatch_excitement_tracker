@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="40dp"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:text="Successful login!"
+        android:layout_width="fill_parent"
+        android:textSize="25sp"
+        android:textColor="#0066CC"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:text="We'll make sure to detect all your exciting moments today."
+        android:layout_width="fill_parent"
+        android:textSize="18sp"
+        android:layout_marginTop="30dp"
+        android:textColor="#0066CC"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

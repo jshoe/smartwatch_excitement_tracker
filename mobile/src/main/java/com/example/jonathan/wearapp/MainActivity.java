@@ -1,8 +1,10 @@
 package com.example.jonathan.wearapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.twitter.sdk.android.Twitter;
@@ -35,17 +37,26 @@ public class MainActivity extends Activity {
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                // I handle the Twitter stuff later.
+                endActivity();
             }
 
             @Override
             public void failure(TwitterException exception) {
                 // Do something on failure
+                endActivity();
             }
         });
         Intent listener = new Intent(this, MyReceiverService.class);
         startService(listener);
+    }
 
+    public void endActivity() {
+        Log.i("ActivityMain", "Trying to end the activity.");
+        Intent i = new Intent();
+        i.setClass(this, Confirmation.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Log.i("ActivityMain", "Successful login.");
+        finish();
     }
 
     @Override
