@@ -2,8 +2,10 @@ package com.example.jonathan.wearapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -38,6 +40,7 @@ public class TwitterActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_twitter);
+        getActionBar().setTitle("Excitement Assistant!");
         String imagePath = getIntent().getStringExtra("imagePath");
         Log.i("TwitterActivity", "Booting up Twitter.");
         Log.i("TwitterActivity", "Trying to get " + imagePath);
@@ -78,10 +81,12 @@ public class TwitterActivity extends Activity {
                                 Log.i("TwitterActivityGuest", "Result: " + src);
 
                                 Bitmap pic = pictureFetch(src);
+                                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.nearby_icon);
 
                                 NotificationCompat.Builder notificationBuilder =
                                         new NotificationCompat.Builder(TwitterActivity.this)
-                                                .setSmallIcon(R.drawable.ic_media_play)
+                                                .setSmallIcon(R.drawable.nearby_icon)
+                                                .setLargeIcon(icon)
                                                 .setContentTitle("Nearby!")
                                                 .setContentText("Someone else was excited!")
                                                 .extend(new NotificationCompat.WearableExtender().setBackground(pic));

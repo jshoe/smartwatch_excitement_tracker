@@ -124,8 +124,8 @@ public class ExciteService extends Service implements SensorEventListener {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.open_on_phone)
-                .setContentTitle("Excitement!")
-                .setContentText("Open to document it")
+                .setContentTitle("You're excited!")
+                .setContentText("Open to take a picture!")
                 .setAutoCancel(true)
                 .setContentIntent(viewPendingIntent);
 

@@ -19,6 +19,7 @@ public class PhotoWorkflowActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getActionBar().setTitle("Excitement Assistant!");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_workflow);
         Log.i("Photo workflow activity", "Passed to photo workflow.");

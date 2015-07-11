@@ -1,7 +1,11 @@
 <resources>
-    <string name="app_name">WearApp</string>
-
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Excitement Assistant!</string>
+    <string name="header">Welcome to the Excitement Assistant App!</string>
+    <string name="welcome">Please sign in with Twitter to begin documenting your exciting adventures.</string>
+    <string name="photo_header">My, you\'re excited!</string>
+    <string name="photo_take">Let\'s take a photo of your exciting discovery.</string>
+    <string name="twitter_success_header">Success!</string>
+    <string name="twitter_success">Your tweet is now live on Twitter. Check out someone else who\'s excited on your Wear!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_photo_workflow">PhotoWorkflowActivity</string>
     <string name="title_activity_twitter">TwitterActivity</string>
